@@ -87,34 +87,19 @@ export default function AgentDetail() {
         <main className={`${homeStyle.main} ${dark ? homeStyle.dark : ""}`} style={{ display }}>
             <Header />
             <div className={`${homeStyle.mainSectionContent} ${dark ? homeStyle.dark : ""}`}>
+
+                </div>
+                <div>
                 <h1 className={homeStyle.agentName}>{agent.name}</h1>
                 <p className={homeStyle.agentRole}>Role: {agent.role}</p>
 
-                {/* Display fetched agent data only for Journalist */}
+                {/* Display fetched agent data only for Journalist
                 {agent.id === "journalist" && agentData && (
                     <div className={homeStyle.agentDetails}>
-                        <h2>About {agentData.name}</h2>
-                        <p>{agentData.bio.join(" ")}</p>
-                        <h3>Lore</h3>
-                        <ul>
-                            {agentData.lore.map((item, index) => (
-                                <li key={index}>{item}</li>
-                            ))}
-                        </ul>
-                        <h3>Message Examples</h3>
-                        <ul>
-                            {agentData.messageExamples.map((example, index) => (
-                                <li key={index}>
-                                    {example.map((msg, i) => (
-                                        <div key={i}>
-                                            <strong>{msg.user}:</strong> {msg.content.text}
-                                        </div>
-                                    ))}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+                      
+                      
+                 </div>
+                )} */}
 
                 {/* Chat Interface */}
                 <div className={homeStyle.chatContainer}>
@@ -136,14 +121,15 @@ export default function AgentDetail() {
                         <button onClick={sendMessage}>Send</button>
                     </div>
                 </div>
-
-                {/* Improved Button */}
+                <div className={homeStyle.mainSectionContent} > {/* Improved Button */}
                 <button 
                     className={`${homeStyle.goBackButton} ${dark ? homeStyle.darkButton : ""}`} 
                     onClick={() => router.push("/")}
                 >
                     Go Back
-                </button>
+                </button></div>
+
+               
             </div>
         </main>
     );
