@@ -1,3 +1,9 @@
+import express from "express";
+import cors from "cors";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import net from "net";
 import { DirectClient } from "@elizaos/client-direct";
 import {
   AgentRuntime,
@@ -9,10 +15,6 @@ import {
 import { bootstrapPlugin } from "@elizaos/plugin-bootstrap";
 import { createNodePlugin } from "@elizaos/plugin-node";
 import { solanaPlugin } from "@elizaos/plugin-solana";
-import fs from "fs";
-import net from "net";
-import path from "path";
-import { fileURLToPath } from "url";
 import { initializeDbCache } from "./cache/index.ts";
 import { character } from "./character.ts";
 import { startChat } from "./chat/index.ts";
@@ -26,6 +28,27 @@ import { initializeDatabase } from "./database/index.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = 3001; // Express API port
+
+app.use(express.json());
+app.use(cors());
+// Serve character JSON data
+app.get("/character", (req, res) => {
+  const characterPath = path.join(__dirname, "../characters/journalist.character.json");
+
+  fs.readFile(characterPath, "utf8", (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to load character data" });
+    }
+    res.json(JSON.parse(data));
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`Express API running at http://localhost:${PORT}/character`);
+});
 
 export const wait = (minTime: number = 1000, maxTime: number = 3000) => {
   const waitTime =
@@ -93,7 +116,6 @@ async function startAgent(character: Character, directClient: DirectClient) {
 
     directClient.registerAgent(runtime);
 
-    // report to console
     elizaLogger.debug(`Started ${character.name} as ${runtime.agentId}`);
 
     return runtime;
@@ -152,9 +174,7 @@ const startAgents = async () => {
     serverPort++;
   }
 
-  // upload some agent functionality into directClient
   directClient.startAgent = async (character: Character) => {
-    // wrap it so we don't have to inject directClient later
     return startAgent(character, directClient);
   };
 
@@ -165,7 +185,7 @@ const startAgents = async () => {
   }
 
   const isDaemonProcess = process.env.DAEMON_PROCESS === "true";
-  if(!isDaemonProcess) {
+  if (!isDaemonProcess) {
     elizaLogger.log("Chat started. Type 'exit' to quit.");
     const chat = startChat(characters);
     chat();
