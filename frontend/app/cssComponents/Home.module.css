@@ -1,0 +1,317 @@
+.main {
+    color: var(--text-color);
+    --background-color: #f8f9fa; /* Light gray background */
+    --text-color: #212529; /* Dark gray text */
+    --element-color: #ffffff; /* White for cards and containers */
+    --shadow-color: rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    --trending-color: #e9ecef; /* Light gray for trending section */
+    --hover-link-color: #e9ecef; /* Light gray for hover states */
+    --button-bg-color: #0d6efd; /* Bootstrap blue for buttons */
+    --button-text-color: #ffffff; /* White text for buttons */
+    --border-color: #dee2e6; /* Light gray for borders */
+    background-color: var(--background-color);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 0; /* Adjust padding to remove extra space */
+    overflow: visible; /* Ensure overflow is visible */
+}
+
+.main.dark {
+    --background-color: #1a1a1a; /* Dark gray background */
+    --text-color: #f8f9fa; /* Light gray text */
+    --element-color: #2d2d2d; /* Dark gray for cards and containers */
+    --shadow-color: rgba(0, 0, 0, 0.5); /* Dark shadow for depth */
+    --trending-color: #3d3d3d; /* Slightly lighter gray for trending section */
+    --hover-link-color: #4d4d4d; /* Slightly lighter gray for hover states */
+    --button-bg-color: #64c9db; /* Bootstrap blue for buttons */
+    --button-text-color: #ffffff; /* White text for buttons */
+    --border-color: #4d4d4d; /* Slightly lighter gray for borders */
+}
+/* Main content section */
+.main .main-section-content {
+    flex: 1; /* Take up remaining space */
+    min-width: 300px; /* Ensure it doesn't get too small */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent overflow */
+    margin-top: 50;
+}
+
+
+/* Left section styling */
+.main .main-section-left {
+    width: 300px; /* Fixed width */
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    top: 70px; /* Stick below the header */
+    align-self: flex-start; /* Align to the top */
+}
+
+/* Right section styling */
+.main .main-section-right {
+    width: 400px; /* Fixed width */
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    top: 70px; /* Stick below the header */
+    align-self: flex-start; /* Align to the top */
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .main {
+        flex-direction: column; /* Stack sections vertically */
+    }
+
+    .main .main-section-left,
+    .main .main-section-right {
+        width: 100%; /* Full width on smaller screens */
+        position: static; /* Remove sticky positioning */
+    }
+}
+
+
+
+
+
+@media (min-width: 790px) and (max-width: 850px) {
+    .main .news-card {
+        height: 375px;
+    }
+}
+
+@media (min-width: 690px) and (max-width: 790px) {
+    .main .news-card {
+        height: 375px;
+    }
+}
+
+@media (min-width: 560px) and (max-width: 690px) {
+    .main .news-card {
+        height: 425px;
+    }
+}
+
+@media (min-width: 500px) and (max-width: 560px) {
+    .main .news-card {
+        height: 350px;
+        width: 90%;
+    }
+}
+
+@media (min-width: 280px) and (max-width: 500px) {
+    .main .news-card {
+        width: 90%;
+        height: 400px;
+    }
+    .main .news-container {
+        place-items: start;
+    }
+}
+
+@media (max-width: 500px) {
+    .main .search-container {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 280px) {
+    .main .news-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .main .search-Bar input {
+        padding-right: 0px;
+        width: 90%;
+        font-size: 10px;
+    }
+    .main .news-card {
+        width: 100%;
+        height: fit-content;
+    }
+    .main .selector {
+        width: 90%;
+        font-size: 10px;
+    }
+}
+
+
+
+/* AI Agent Container */
+.ai-agent-container {
+    width: 100%; /* Full width */
+    background-color: var(--element-color); /* Use element color */
+    padding: 16px; /* Add padding for spacing */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 4px var(--shadow-color); /* Subtle shadow */
+    margin-bottom: 20px; /* Space below the component */
+}
+
+.ai-agent-header {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text-color); /* Use text color */
+    margin-bottom: 16px; /* Space below the header */
+}
+
+.ai-agent-list {
+    list-style: none; /* Remove default list styling */
+    margin: 0;
+    padding: 0;
+}
+
+.ai-agent-item {
+    padding: 12px 16px; /* Add padding for spacing */
+    margin-bottom: 8px; /* Space between items */
+    background-color: var(--element-color); /* Use element color */
+    border-radius: 8px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+    color: var(--text-color); /* Use text color */
+    border: 1px solid var(--border-color); /* Use border color */
+}
+
+.ai-agent-item:hover {
+    background-color: var(--hover-link-color); /* Use hover color */
+    transform: translateY(-3px); /* Slight lift on hover */
+}
+
+.ai-agent-highlight {
+    background-color: var(--trending-color); /* Use trending color */
+    color: var(--text-color); /* Use text color */
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ai-agent-container {
+        padding: 12px; /* Smaller padding for mobile */
+    }
+
+    .ai-agent-header {
+        font-size: 18px; /* Smaller font size for mobile */
+    }
+
+    .ai-agent-item {
+        padding: 10px 12px; /* Smaller padding for mobile */
+    }
+}
+
+/* AgentDetail */
+.mainSectionContent {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.agentName {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.dark .agentName {
+    color: #ffffff;
+}
+
+.agentRole {
+    font-size: 1.5rem;
+    color: #666;
+}
+
+.dark .agentRole {
+    color: #cccccc;
+}
+
+.goBackButton {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #0070f3;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.goBackButton:hover {
+    background-color: #005bb5;
+}
+
+.darkButton {
+    background-color: #1e90ff;
+}
+
+.darkButton:hover {
+    background-color: #0077cc;
+}
+
+.chatContainer {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.dark .chatContainer {
+    background-color: #333;
+    border-color: #555;
+}
+
+.chatHistory {
+    height: 300px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+.dark .chatHistory {
+    background-color: #444;
+    border-color: #666;
+    color: #fff;
+}
+
+.userMessage {
+    text-align: right;
+    color: #0070f3;
+}
+
+.agentMessage {
+    text-align: left;
+    color: #333;
+}
+
+.dark .agentMessage {
+    color: #ccc;
+}
+
+.chatInput {
+    display: flex;
+    gap: 10px;
+}
+
+.chatInput input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.chatInput button {
+    padding: 10px 20px;
+    background-color: #0070f3;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.chatInput button:hover {
+    background-color: #005bb5;
+}
