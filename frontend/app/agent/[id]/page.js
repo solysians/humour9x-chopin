@@ -12,7 +12,7 @@ export default function AgentDetail() {
     const { id } = useParams(); // Get the dynamic agent ID from the URL
     const router = useRouter();
     const [display, setDisplay] = useState("block"); // Define display state
-    const [theme, setTheme] = useTheme();
+    const [theme] = useTheme(); // Destructure correctly
     const dark = theme?.dark || false;
     const [agentData, setAgentData] = useState(null); // State to store fetched agent data
     const [loading, setLoading] = useState(true); // Loading state
@@ -25,11 +25,11 @@ export default function AgentDetail() {
     // Fetch agent data only for the Journalist
     useEffect(() => {
         if (!agent) return;
-    
+
         if (agent.id === "journalist") {
             const fetchAgentData = async () => {
                 try {
-                    const response = await fetch(`http://localhost:3000/characters/journalist.character.json`);
+                    const response = await fetch("http://localhost:3001/character");
                     if (!response.ok) {
                         throw new Error("Failed to fetch agent data");
                     }
@@ -41,12 +41,12 @@ export default function AgentDetail() {
                     setLoading(false);
                 }
             };
-    
+
             fetchAgentData();
         } else {
             setLoading(false);
         }
-    }, [id, agent]);
+    }, [id, agent]); // Ensure dependencies are correctly set
 
     // Function to send user input to the backend and get the agent's response
     const sendMessage = async () => {
@@ -59,7 +59,7 @@ export default function AgentDetail() {
                 body: JSON.stringify({
                     text: userInput,
                     userId: "user",
-                    userName: "User ",
+                    userName: "User",
                 }),
             });
 
@@ -85,7 +85,7 @@ export default function AgentDetail() {
 
     return (
         <main className={`${homeStyle.main} ${dark ? homeStyle.dark : ""}`} style={{ display }}>
-            <Header/>
+            <Header />
             <div className={`${homeStyle.mainSectionContent} ${dark ? homeStyle.dark : ""}`}>
                 <h1 className={homeStyle.agentName}>{agent.name}</h1>
                 <p className={homeStyle.agentRole}>Role: {agent.role}</p>
@@ -130,7 +130,7 @@ export default function AgentDetail() {
                             type="text"
                             value={userInput}
                             onChange={(e) => setUserInput(e.target.value)}
-                            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                            onKeyDown={(e) => e.key === "Enter" && sendMessage()} // Fixed event
                             placeholder="Type your message..."
                         />
                         <button onClick={sendMessage}>Send</button>
