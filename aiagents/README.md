@@ -3,9 +3,8 @@
 humour9x-sui is an AI agent fun project designed to generate engaging content across various domains. It includes different character personas that provide unique perspectives, insights, and analyses. The project features sentiment analysis, multilingual support, trending topic tracking, and news categorization.
 
 # Product document - 
-
-https://dandelion-sushi-1e3.notion.site/Homour9x-Team-SUI-AGENT-Hackathont-18980f444b5980908d45c7c3e36ee133
-
+Coming...
+ 
 ## Default Characters
 To load the default characters:
 - Use the following command for each character:
