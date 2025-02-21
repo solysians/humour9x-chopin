@@ -1,129 +1,157 @@
-humour9x-chopin Project Setup Guide
+# humour9x-chopin Project Setup Guide
 
-Prerequisites
+## Prerequisites
 
-Node.js v22+ (Check version with node -v)
+- **Node.js v22+** (Check version with `node -v`)
+- **pnpm package manager** (Install via `npm install -g pnpm`)
 
-pnpm package manager (Install via npm install -g pnpm)
+---
 
-Backend Setup (AI Agents Service)
+## Backend Setup (AI Agents Service)
 
-1. Navigate to the Backend Directory
+### 1. Navigate to the Backend Directory
 
+```sh
 cd path/to/humour9x-chopin/aiagents
+```
 
-2. Install Dependencies
+### 2. Install Dependencies
 
+```sh
 pnpm install
+```
 
-3. Install Required Packages
+### 3. Install Required Packages
 
 If you encounter package-related errors, manually install:
 
+```sh
 pnpm add cors express
+```
 
-4. Environment Variables Setup
+### 4. Environment Variables Setup
 
-Create a .env file in the backend directory and add the required keys:
+Create a `.env` file in the backend directory and add the required environment variables.
 
-DISCORD_APPLICATION_ID=
-DISCORD_API_TOKEN=
-OPENAI_API_KEY=sk-*
-REDPILL_API_KEY=
-GROK_API_KEY=
-GROQ_API_KEY=gsk_*
-OPENROUTER_API_KEY=
-GOOGLE_GENERATIVE_AI_API_KEY=
-ELEVENLABS_XI_API_KEY=
-SERVER_PORT=3001
+### 5. Run the Backend with Character Configuration
 
-5. Run the Backend with Character Configuration
-
+```sh
 pnpm start --characters="characters/journalist.character.json"
+```
 
 This starts the backend and loads the Journalist agent configuration.
 
-Ensure the backend is running before starting the frontend.
+**Ensure the backend is running before starting the frontend.**
 
-Frontend Setup (Humour9x Web Application)
+---
 
-1. Navigate to the Frontend Directory
+## Frontend Setup (Humour9x Web Application)
 
+### 1. Navigate to the Frontend Directory
+
+```sh
 cd path/to/humour9x-chopin/frontend
+```
 
-2. Install Dependencies
+### 2. Install Dependencies
 
+```sh
 npm install
+```
 
-3. Install Chopin Framework Packages
+### 3. Install Chopin Framework
 
+To prevent version issues, ensure the Chopin framework is correctly installed:
+
+```sh
 npm install @chopinframework/react @chopinframework/next
+```
 
-If you encounter version issues, ensure Chopin's package is correctly installed. Otherwise, force install:
+If any version issues occur, use:
 
-npm install --force
+```sh
+npm install @chopinframework/react @chopinframework/next --force
+npm install --force 
+```
 
-4. Initialize Chopin Framework
+
+
+### 4. Initialize Chopin Configuration
 
 Run the following command inside the root directory of your existing codebase:
 
+```sh
 npx chopd init
+```
 
 This will:
 
-Create a chopin.config.json with default settings
+- Create a `chopin.config.json` with default settings
+- Create a `.chopin` directory for internal use
+- Add `.chopin` to your `.gitignore`
 
-Create a .chopin directory for internal use
+### 5. Start the Proxy and Development Server
 
-Add .chopin to your .gitignore
+Instead of `npm run dev`, run:
 
-5. Start the Frontend with Chopin Proxy
-
-Instead of npm run dev, use:
-
+```sh
 npx chopd
+```
 
-This sets up a reverse proxy on 4000 that forwards to 3000 by default.
+This sets up a reverse proxy on **port 4000**, forwarding to **port 3000**.
 
-Chopin Configuration
+#### `chopin.config.json` Structure:
 
-chopin.config.json contains:
-
+```json
 {
   "command": "npm run dev",
   "proxyPort": 4000,
   "targetPort": 3000
 }
+```
 
-Ports & API Usage
+Your application will now be accessible at:
 
-Port 4000 (Frontend via Chopin)
+- [http://localhost:4000](http://localhost:4000)
 
-The frontend runs on 4000, forwarding to 3000.
+---
 
-Access it at: http://localhost:4000.
+## Ports & API Usage
 
-Port 3001 (Backend)
+### Port 4000 (Frontend Proxy)
 
-The backend runs on 3001, handling AI agent processing and API endpoints.
+- The frontend now runs on port **4000**, proxying requests to **3000**.
 
-API Example
+### Port 3001 (Backend)
 
-For sending user messages:
+- The backend runs on **3001**, handling AI agent processing and API endpoints.
 
-fetch(`http://localhost:4000/${id}/message`, {...})
+---
 
-Troubleshooting
+## Troubleshooting
 
-❌ Issue: Backend fails due to missing dependencies?
-✅ Solution: Run inside aiagents folder:
+❌ **Issue:** Backend fails due to missing dependencies?
+✅ **Solution:** Run inside `aiagents` folder:
 
+```sh
 pnpm install && pnpm add cors express
+```
 
-❌ Issue: API calls fail (fetch error)?
-✅ Solution: Ensure the backend is running at http://localhost:3001 before testing API calls.
+❌ **Issue:** API calls fail (fetch error)?
+✅ **Solution:** Ensure the backend is running on [http://localhost:3001](http://localhost:3001) before testing API calls.
 
-❌ Issue: Chopin proxy not working?
-✅ Solution: Run npx chopd instead of npm run dev to start the frontend.
+❌ **Issue:** Frontend version conflicts with Chopin?
+✅ **Solution:** Ensure Chopin packages are correctly installed:
+
+```sh
+npm install @chopinframework/react @chopinframework/next --force
+```
+
+❌ **Issue:** Unable to start frontend with `npm run dev`?
+✅ **Solution:** Use:
+
+```sh
+npx chopd
+```
 
 Now your humour9x-chopin project is correctly set up with Chopin authentication and proxy handling!
