@@ -6,7 +6,7 @@ import { useTheme } from "@/app/Hooks/useTheme";
 import Image from "next/image";
 import Link from "next/link";
 import imagelogo from "@/app/assets/image.png"; 
-
+import Login from "./Login";
 export default function Header({ display, setDisplay }) {
   const [theme, setTheme] = useTheme();
   const dark = theme?.dark || false;
@@ -71,7 +71,8 @@ export default function Header({ display, setDisplay }) {
                 <p>{dark ? "\u2600 Light" : "\ud83c\udf19 Dark"}</p>
               </li>
               <li style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
-                <button>Wallet</button>
+                              <Login />
+                
               </li>
             </ul>
           </nav>

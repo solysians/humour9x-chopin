@@ -18,7 +18,7 @@ export default function Home({ display }) {
                 <AI_Agent setQuery={setQuery} />
             </div>
             <div className={style["main-section-content"]}>
-                <Login />
+                {/* <Login /> */}
             </div>
 
 
