@@ -44,3 +44,8 @@ frontend/.env*
 
 # chopin
 /frontend/.chopin
+
+#env
+.env
+.tee-cloud
+**/node_modules/
