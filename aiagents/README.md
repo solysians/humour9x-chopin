@@ -1,6 +1,6 @@
-# humour9x-sui
+# humour9x-chopin
 
-humour9x-sui is an AI agent fun project designed to generate engaging content across various domains. It includes different character personas that provide unique perspectives, insights, and analyses. The project features sentiment analysis, multilingual support, trending topic tracking, and news categorization.
+humour9x-chopin is an AI agent fun project designed to generate engaging content across various domains. It includes different character personas that provide unique perspectives, insights, and analyses. The project features sentiment analysis, multilingual support, trending topic tracking, and news categorization.
 
 # Product document - 
 Coming...
