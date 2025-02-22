@@ -1,129 +1,172 @@
-humour9x-chopin Project Setup Guide
+ # humour9x-chopin Project Setup Guide
 
-Prerequisites
+A comprehensive guide for setting up the **humour9x-chopin** project, including backend and frontend configurations with Chopin Framework integration.
 
-Node.js v22+ (Check version with node -v)
+## 🚀 Prerequisites
 
-pnpm package manager (Install via npm install -g pnpm)
+- **Node.js v22+**  
+  _Check version:_  
+  ```bash
+  node -v
+  ```
 
-Backend Setup (AI Agents Service)
+- **pnpm package manager**  
+  _Install pnpm globally:_  
+  ```bash
+  npm install -g pnpm
+  ```
 
-1. Navigate to the Backend Directory
+---
 
+## ⚙️ Backend Setup (AI Agents Service)
+
+### 1. Navigate to the Backend Directory
+
+```bash
 cd path/to/humour9x-chopin/aiagents
+```
 
-2. Install Dependencies
+### 2. Install Dependencies
 
+```bash
 pnpm install
+```
 
-3. Install Required Packages
+### 3. Install Required Packages (If Needed)
 
-If you encounter package-related errors, manually install:
+If you encounter package-related errors:
 
+```bash
 pnpm add cors express
+```
 
-4. Environment Variables Setup
+### 4. Environment Variables Setup
 
-Create a .env file in the backend directory and add the required keys:
+Create a `.env` file in the backend directory and add the required keys:
 
-DISCORD_APPLICATION_ID=
-DISCORD_API_TOKEN=
-OPENAI_API_KEY=sk-*
-REDPILL_API_KEY=
-GROK_API_KEY=
-GROQ_API_KEY=gsk_*
-OPENROUTER_API_KEY=
-GOOGLE_GENERATIVE_AI_API_KEY=
-ELEVENLABS_XI_API_KEY=
-SERVER_PORT=3001
+ 
+### 5. Run the Backend with Character Configuration
 
-5. Run the Backend with Character Configuration
+Start the backend and load the specific character configuration:
 
+```bash
 pnpm start --characters="characters/journalist.character.json"
+```
 
-This starts the backend and loads the Journalist agent configuration.
+> ✅ **Ensure the backend is running before starting the frontend.**
 
-Ensure the backend is running before starting the frontend.
+---
 
-Frontend Setup (Humour9x Web Application)
+## 🌐 Frontend Setup (Humour9x Web Application)
 
-1. Navigate to the Frontend Directory
+### 1. Navigate to the Frontend Directory
 
+```bash
 cd path/to/humour9x-chopin/frontend
+```
 
-2. Install Dependencies
+### 2. Install Dependencies
 
+```bash
 npm install
+```
 
-3. Install Chopin Framework Packages
+### 3. Install Chopin Framework Packages
 
+```bash
 npm install @chopinframework/react @chopinframework/next
+```
 
-If you encounter version issues, ensure Chopin's package is correctly installed. Otherwise, force install:
+_If you encounter version issues, force install:_
 
+```bash
 npm install --force
+```
 
-4. Initialize Chopin Framework
+### 4. Initialize Chopin Framework
 
-Run the following command inside the root directory of your existing codebase:
+Inside the root directory:
 
+```bash
 npx chopd init
+```
 
-This will:
+This command will:
 
-Create a chopin.config.json with default settings
+- Create a `chopin.config.json` with default settings.
+- Generate a `.chopin` directory for internal use.
+- Add `.chopin` to your `.gitignore`.
 
-Create a .chopin directory for internal use
+### 5. Start the Frontend with Chopin Proxy
 
-Add .chopin to your .gitignore
+Instead of the default `npm run dev`, use:
 
-5. Start the Frontend with Chopin Proxy
-
-Instead of npm run dev, use:
-
+```bash
 npx chopd
+```
 
-This sets up a reverse proxy on 4000 that forwards to 3000 by default.
+> ⚡ **This sets up a reverse proxy on port `4000` that forwards to `3000` by default.**
 
-Chopin Configuration
+---
 
-chopin.config.json contains:
+## ⚡ Chopin Configuration
 
+The `chopin.config.json` should include:
+
+```json
 {
   "command": "npm run dev",
   "proxyPort": 4000,
   "targetPort": 3000
 }
+```
 
-Ports & API Usage
+---
 
-Port 4000 (Frontend via Chopin)
+## 🔌 Ports & API Usage
 
-The frontend runs on 4000, forwarding to 3000.
+- **Frontend (Chopin Proxy):**  
+  Access the frontend at [http://localhost:4000](http://localhost:4000)
 
-Access it at: http://localhost:4000.
+- **Backend (AI Agents API):**  
+  Runs on port `3001`, handling AI agent processing and API endpoints.
 
-Port 3001 (Backend)
+### 📱 API Example
 
-The backend runs on 3001, handling AI agent processing and API endpoints.
+Send a user message to an agent:
 
-API Example
+```js
+fetch(`http://localhost:4000/${id}/message`, {
+  method: "POST",
+  body: JSON.stringify({ message: "Hello, Agent!" }),
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+```
 
-For sending user messages:
+---
 
-fetch(`http://localhost:4000/${id}/message`, {...})
+## 🛠️ Troubleshooting
 
-Troubleshooting
-
-❌ Issue: Backend fails due to missing dependencies?
-✅ Solution: Run inside aiagents folder:
-
+### ❌ Backend fails due to missing dependencies?
+✅ Solution:  
+Run the following inside the `aiagents` directory:
+```bash
 pnpm install && pnpm add cors express
+```
 
-❌ Issue: API calls fail (fetch error)?
-✅ Solution: Ensure the backend is running at http://localhost:3001 before testing API calls.
+### ❌ API calls fail (fetch error)?
+✅ Solution:  
+Ensure the backend server is running at [http://localhost:3001](http://localhost:3001) before making API calls.
 
-❌ Issue: Chopin proxy not working?
-✅ Solution: Run npx chopd instead of npm run dev to start the frontend.
+### ❌ Chopin proxy not working?
+✅ Solution:  
+Use this command to start the frontend:
+```bash
+npx chopd
+```
 
-Now your humour9x-chopin project is correctly set up with Chopin authentication and proxy handling!
+ 
+Now your **humour9x-chopin** project is ready with Chopin authentication and proxy handling!  
+
