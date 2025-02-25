@@ -9,38 +9,36 @@ const Login = ({ isNestedInButton = false }) => {
     showFullAddress: false,
   });
 
-  const handleLogin = async () => {
-    setUiState(prev => ({ ...prev, isLoggingIn: true }));
-  
-    try {
-      // Send user to Chopin login
-      const response = await fetch("http://localhost:4000/_chopin/login", {
-        method: "GET",
-        credentials: "include", // Ensure cookies are included
-      });
-  
-      if (!response.ok) {
-        throw new Error("Login request failed");
-      }
-  
-      const data = await response.json();
-  
-      if (data.success && data.token) {
-        // Store token if needed (optional)
-        localStorage.setItem("chopin_token", data.token);
-        localStorage.setItem("wallet_address", data.address);
-  
-        // Redirect user to "/"
-        window.location.href = "/";
-      } else {
-        console.error("Login failed:", data);
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-    } finally {
-      setUiState(prev => ({ ...prev, isLoggingIn: false }));
-    }
-  };
+  // app/components/Login.js (updated login handler)
+const handleLogin = async () => {
+  setUiState(prev => ({ ...prev, isLoggingIn: true }));
+
+  try {
+    const response = await fetch("http://localhost:4000/_chopin/login", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!response.ok) throw new Error("Login failed");
+
+    const { address, token } = await response.json();
+    
+    // Store both token and address
+    localStorage.setItem("chopin_token", token);
+    localStorage.setItem("wallet_address", address);
+    
+    // Verify Chopin status before proceeding
+    const statusResponse = await fetch("http://localhost:4000/_chopin/status");
+    if (!statusResponse.ok) throw new Error("Chopin service unavailable");
+    
+    window.location.href = "/";
+
+  } catch (error) {
+    console.error("Login error:", error);
+  } finally {
+    setUiState(prev => ({ ...prev, isLoggingIn: false }));
+  }
+};
   
   
   
