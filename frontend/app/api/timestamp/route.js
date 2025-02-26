@@ -9,12 +9,13 @@
 //     });
 // }
 
+  // app/api/timestamp/route.js
 export async function GET() {
-    return new Response(JSON.stringify({ 
+  return new Response(JSON.stringify({ 
       timestamp: Date.now(),
       isoDate: new Date().toISOString()
-    }), {
+  }), {
       headers: { 'Content-Type': 'application/json' },
       status: 200
-    });
-  }
+  });
+}
