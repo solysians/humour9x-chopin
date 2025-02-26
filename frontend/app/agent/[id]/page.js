@@ -44,104 +44,102 @@ export default function AgentDetail() {
     }, [id, agent]);
 
     const sendMessage = async () => {
-      if (!userInput.trim()) return;
-  
-      try {
-          // Fetch the current timestamp from an API route
-          const response = await fetch(`${process.env.NEXT_PUBLIC_CHOPIN_PROXY_URL}/api/timestamp`);
-          const { timestamp } = await response.json();
-          const date = new Date(timestamp).toLocaleDateString();
-  
-          // Create user log entry
-          const userLog = {
-              type: 'USER_PROMPT',
-              message: userInput,
-              date: date,
-              timestamp: timestamp,
-              agent: id
-          };
-  
-          // Send user input to the agent through the proxy
-          const agentResponse = await fetch(`${process.env.NEXT_PUBLIC_CHOPIN_PROXY_URL}/api/${id}/message`, {
-              method: "POST",
-              headers: { 
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${localStorage.getItem("chopin_token")}`,
-              },
-              body: JSON.stringify({
-                  text: userInput,
-                  userId: "user",
-                  userName: "User",
-              }),
-          });
-  
-          if (!agentResponse.ok) throw new Error("Agent response failed");
-  
-          const data = await agentResponse.json();
-          const responseText = data[0].text;
-  
-          // Create agent log entry
-          const agentLog = {
-              type: 'AGENT_RESPONSE',
-              message: responseText,
-              date: date,
-              timestamp: timestamp,
-              agent: id
-          };
-  
-          // Update interaction logs and chat history
-          setInteractionLogs(prev => [...prev, userLog, agentLog]);
-          setChatHistory(prev => [
-              ...prev,
-              { user: "You", text: userInput },
-              { user: agent.name, text: responseText },
-          ]);
-          setUserInput("");
-  
-          // Log both user and agent messages to the /logs endpoint
-          await logToChopin(userLog);
-          await logToChopin(agentLog);
-  
-      } catch (error) {
-          console.error("Error sending message:", error);
-      }
-  };
+        if (!userInput.trim()) return;
+
+        try {
+            // Fetch the current timestamp from an API route
+            const response = await fetch('/api/timestamp'); // Create this API route
+            const { timestamp } = await response.json();
+            const date = new Date(timestamp).toLocaleDateString(); // Format date from timestamp
+
+            // Create user log entry
+            const userLog = {
+                type: 'USER_PROMPT',
+                message: userInput,
+                date: date,
+                timestamp: timestamp, // Use fetched timestamp
+                agent: id
+            };
+
+            // Send user input to the agent
+            const agentResponse = await fetch(`http://localhost:3000/${id}/message`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    text: userInput,
+                    userId: "user",
+                    userName: "User  ",
+                }),
+            });
+
+            if (!agentResponse.ok) throw new Error("Agent response failed");
+
+            const data = await agentResponse.json();
+            const responseText = data[0].text;
+
+            // Create agent log entry
+            const agentLog = {
+                type: 'AGENT_RESPONSE',
+                message: responseText,
+                date: date,
+                timestamp: timestamp, // Use fetched timestamp
+                agent: id
+            };
+
+            // Update interaction logs and chat history
+            setInteractionLogs(prev => [...prev, userLog, agentLog]);
+            setChatHistory(prev => [
+                ...prev,
+                { user: "You", text: userInput },
+                { user: agent.name, text: responseText },
+            ]);
+            setUserInput("");
+
+            // Log both user and agent messages to the /logs endpoint
+            await logToChopin(userLog);
+            await logToChopin(agentLog);
+
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
+    };
+    
 
     // Update logToChopin function in AgentDetail.js
     const logToChopin = async (log) => {
-      try {
-          const jwt = localStorage.getItem("chopin_token");
-          const address = localStorage.getItem("wallet_address");
-  
-          const chopinLog = {
-              type: log.type,
-              content: log.message,
-              metadata: {
-                  agent: log.agent,
-                  address: address,
-                  timestamp: log.timestamp,
-                  date: log.date,
-                  chain: "celestia"
-              }
-          };
-  
-          const response = await fetch(`${process.env.NEXT_PUBLIC_CHOPIN_PROXY_URL}/api/logs`, {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${jwt}`,
-              },
-              body: JSON.stringify(chopinLog),
-          });
-  
-          if (!response.ok) {
-              throw new Error(`Failed to log message: ${await response.text()}`);
-          }
-  
-      } catch (error) {
-          console.error("Error logging to Chopin:", error);
-      }
-  };
+        try {
+            const jwt = localStorage.getItem("chopin_token");
+            const address = localStorage.getItem("wallet_address");
+
+            const chopinLog = {
+                type: log.type,
+                content: log.message,
+                metadata: {
+                    agent: log.agent,
+                    address: address,
+                    timestamp: log.timestamp,
+                    date: log.date,
+                    chain: "celestia"
+                }
+            };
+
+            const response = await fetch("http://localhost:4000/api/logs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${jwt}`,
+                },
+                body: JSON.stringify(chopinLog),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to log message: ${await response.text()}`);
+            }
+
+        } catch (error) {
+            console.error("Error logging to Chopin:", error);
+        }
+    };
 
     // Handle log selection
     const handleLogSelection = (log) => {
