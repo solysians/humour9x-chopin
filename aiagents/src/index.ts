@@ -34,9 +34,11 @@ const PORT = 3001; // Express API port
 
 app.use(express.json());
 app.use(cors());
-// Serve character JSON data
-app.get("/character", (req, res) => {
-  const characterPath = path.join(__dirname, "../characters/journalist.character.json");
+
+// Serve character JSON data dynamically
+app.get("/character/:id", (req, res) => {
+  const characterId = req.params.id;
+  const characterPath = path.join(__dirname, `../characters/${characterId}.character.json`);
 
   fs.readFile(characterPath, "utf8", (err, data) => {
     if (err) {
@@ -46,24 +48,21 @@ app.get("/character", (req, res) => {
   });
 });
 
+
 app.listen(PORT, () => {
   console.log(`Express API running at http://localhost:${PORT}/character`);
 });
 
-export const wait = (minTime: number = 1000, maxTime: number = 3000) => {
-  const waitTime =
-    Math.floor(Math.random() * (maxTime - minTime + 1)) + minTime;
+// Utility function to wait for a random time
+export const wait = (minTime = 1000, maxTime = 3000) => {
+  const waitTime = Math.floor(Math.random() * (maxTime - minTime + 1)) + minTime;
   return new Promise((resolve) => setTimeout(resolve, waitTime));
 };
 
-let nodePlugin: any | undefined;
+let nodePlugin;
 
-export function createAgent(
-  character: Character,
-  db: any,
-  cache: any,
-  token: string
-) {
+// Function to create an agent runtime
+export function createAgent(character: Character, db: any, cache: any, token: string) {
   elizaLogger.success(
     elizaLogger.successesTitle,
     "Creating runtime for character",
@@ -91,6 +90,7 @@ export function createAgent(
   });
 }
 
+// Function to start an agent
 async function startAgent(character: Character, directClient: DirectClient) {
   try {
     character.id ??= stringToUuid(character.name);
@@ -104,14 +104,12 @@ async function startAgent(character: Character, directClient: DirectClient) {
     }
 
     const db = initializeDatabase(dataDir);
-
     await db.init();
 
     const cache = initializeDbCache(character, db);
     const runtime = createAgent(character, db, cache, token);
 
     await runtime.initialize();
-
     runtime.clients = await initializeClients(character, runtime);
 
     directClient.registerAgent(runtime);
@@ -129,6 +127,7 @@ async function startAgent(character: Character, directClient: DirectClient) {
   }
 }
 
+// Function to check if a port is available
 const checkPortAvailable = (port: number): Promise<boolean> => {
   return new Promise((resolve) => {
     const server = net.createServer();
@@ -148,6 +147,7 @@ const checkPortAvailable = (port: number): Promise<boolean> => {
   });
 };
 
+// Function to start all agents
 const startAgents = async () => {
   const directClient = new DirectClient();
   let serverPort = parseInt(settings.SERVER_PORT || "3000");
@@ -156,14 +156,13 @@ const startAgents = async () => {
   let charactersArg = args.characters || args.character;
   let characters = [character];
 
-  console.log("charactersArg", charactersArg);
   if (charactersArg) {
     characters = await loadCharacters(charactersArg);
   }
-  console.log("characters", characters);
+
   try {
     for (const character of characters) {
-      await startAgent(character, directClient as DirectClient);
+      await startAgent(character, directClient);
     }
   } catch (error) {
     elizaLogger.error("Error starting agents:", error);
