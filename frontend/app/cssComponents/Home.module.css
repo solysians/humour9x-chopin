@@ -315,3 +315,51 @@
 .chatInput button:hover {
     background-color: #005bb5;
 }
+
+/* Log Section */
+.logSection {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.logList {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 1rem;
+}
+
+.logEntry {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.logHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.logType {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.userLog .logType { color: #2196F3; }
+.agentLog .logType { color: #4CAF50; }
+.errorLog .logType { color: #f44336; }
+
+.logTimestamp {
+    color: #666;
+}
+
+/* Dark Mode */
+.dark .logSection { background: #2d2d2d; }
+.dark .logEntry { background: #1a1a1a; }
+.dark .logTimestamp { color: #888; }
+

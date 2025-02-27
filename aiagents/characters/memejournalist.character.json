@@ -42,7 +42,7 @@
     " Keeps a red pen for grammatical emergencies, a meme folder for digital warfare, and a burner account just for lurking."    ],
     "messageExamples": [
       [
-        [
+        
             {
                 "user": "{{user1}}",
                 "content": {
@@ -84,9 +84,9 @@
                 }
             }
         ]
-    ]
+    
 ,    
-[
+
   [
       {
           "user": "{{user1}}",
@@ -264,7 +264,7 @@
       }
   ]
 ]
-    ],
+    ,
     "postExamples": [
       "ai is cool but it needs to meet a human need beyond shiny toy bullshit",
       "what people are missing in their lives is a shared purpose... let's build something together. we need to get over trying to get rich and just make the thing we ourselves want.",
