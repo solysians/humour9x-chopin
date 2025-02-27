@@ -45,19 +45,19 @@ export default function Header({ display, setDisplay }) {
           <nav>
             <ul className={style["nav-bar-center"]}>
               <li>
-                <Link href="/news">
+              <Link href="#" onClick={(e) => e.preventDefault()}>
                   <p style={linkHoverStyle}>News</p>
                 </Link>
               </li>
               <li>
-                <Link href="/radio">
+              <Link href="#" onClick={(e) => e.preventDefault()}>
                   <p style={linkHoverStyle}>Radio</p>
                 </Link>
               </li>
               <li>
-                <Link href="/sentiment">
-                  <p style={linkHoverStyle}>Sentiment</p>
-                </Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>
+  <p style={linkHoverStyle}>Sentiment</p>
+</Link>
               </li>
             </ul>
           </nav>

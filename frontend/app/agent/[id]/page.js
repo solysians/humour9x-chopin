@@ -28,7 +28,7 @@ export default function AgentDetail() {
 
         const fetchAgentData = async () => {
             try {
-                // Fetch character data dynamically using the agent's ID
+              
                 const response = await fetch(`http://localhost:3001/character/${id}`);
                 if (!response.ok) throw new Error("Failed to fetch agent data");
                 const data = await response.json();
@@ -47,17 +47,17 @@ export default function AgentDetail() {
         if (!userInput.trim()) return;
 
         try {
-            // Fetch the current timestamp from an API route
-            const response = await fetch('/api/timestamp'); // Create this API route
+    
+            const response = await fetch('/api/timestamp'); 
             const { timestamp } = await response.json();
-            const date = new Date(timestamp).toLocaleDateString(); // Format date from timestamp
+            const date = new Date(timestamp).toLocaleDateString(); 
 
             // Create user log entry
             const userLog = {
                 type: 'USER_PROMPT',
                 message: userInput,
                 date: date,
-                timestamp: timestamp, // Use fetched timestamp
+                timestamp: timestamp, 
                 agent: id
             };
 
@@ -95,9 +95,7 @@ export default function AgentDetail() {
             ]);
             setUserInput("");
 
-            // Log both user and agent messages to the /logs endpoint
-            await logToChopin(userLog);
-            await logToChopin(agentLog);
+    
 
         } catch (error) {
             console.error("Error sending message:", error);
@@ -105,86 +103,8 @@ export default function AgentDetail() {
     };
     
 
-    // Update logToChopin function in AgentDetail.js
-    const logToChopin = async (log) => {
-        try {
-            const jwt = localStorage.getItem("chopin_token");
-            const address = localStorage.getItem("wallet_address");
-
-            const chopinLog = {
-                type: log.type,
-                content: log.message,
-                metadata: {
-                    agent: log.agent,
-                    address: address,
-                    timestamp: log.timestamp,
-                    date: log.date,
-                    chain: "celestia"
-                }
-            };
-
-            const response = await fetch("http://localhost:4000/api/logs", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${jwt}`,
-                },
-                body: JSON.stringify(chopinLog),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to log message: ${await response.text()}`);
-            }
-
-        } catch (error) {
-            console.error("Error logging to Chopin:", error);
-        }
-    };
-
-    // Handle log selection
-    const handleLogSelection = (log) => {
-        setSelectedLog(log);
-    };
-
-    // Send selected log to Celestia
-    const sendSelectedLog = async () => {
-        if (!selectedLog) return;
-
-        try {
-            const jwt = localStorage.getItem("chopin_token");
-            const address = localStorage.getItem("wallet_address");
-
-            // Structure for Celestia submission
-            const celestiaLog = {
-                type: "CELESTIA_SUBMISSION",
-                content: selectedLog.message,
-                metadata: {
-                    agent: selectedLog.agent,
-                    address: address,
-                    timestamp: Date.now(),
-                    verified: true // Mark as user-approved
-                }
-            };
-
-            const response = await fetch("http://localhost:4000/_chopin/logs", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${jwt}`,
-                },
-                body: JSON.stringify(celestiaLog),
-            });
-
-            if (!response.ok) throw new Error("Celestia submission failed");
-
-            alert("Successfully submitted to Celestia!");
-            setSelectedLog(null);
-
-        } catch (error) {
-            console.error("Celestia submission error:", error);
-            alert("Failed to submit to Celestia");
-        }
-    };
+    
+   
 
     if (!agent) return <h2>Agent not found!</h2>;
     if (loading) return <h2>Loading...</h2>;
@@ -220,36 +140,8 @@ export default function AgentDetail() {
                     </div>
                 </div>
 
-                {/* Interaction Logs */}
-                <div className={homeStyle.logSection}>
-                    <h3>Interaction Logs</h3>
-                    <div className={homeStyle.logList}>
-                        {interactionLogs.map((log, index) => (
-                            <div key={index} className={`${homeStyle.logEntry} ${log.type === 'USER_PROMPT' ? homeStyle.userLog : ''} ${log.type === 'AGENT_RESPONSE' ? homeStyle.agentLog : ''}`}>
-                                <div className={homeStyle.logHeader} onClick={() => handleLogSelection(log)}>
-                                    <span className={homeStyle.logType}>{log.type}</span>
-                                    <span className={homeStyle.logTimestamp}>
-                                        {new Date(log.timestamp).toLocaleTimeString()} on {log.date}
-                                    </span>
-                                </div>
-                                <div className={homeStyle.logMessage}>
-                                    {log.message}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+             
 
-                {/* Selected Log Section */}
-                {selectedLog && (
-                    <div className={homeStyle.selectedLogSection}>
-                        <h4>Selected Log</h4>
-                        <div>
-                            <strong>{selectedLog.type}:</strong> {selectedLog.message}
-                        </div>
-                        <button onClick={sendSelectedLog}>Send Selected Log to Celestia</button>
-                    </div>
-                )}
 
                 <button
                     className={`${homeStyle.goBackButton} ${dark ? homeStyle.darkButton : ""}`}
