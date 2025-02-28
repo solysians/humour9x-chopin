@@ -24,6 +24,8 @@ const handleLogin = async () => {
     const { address, token } = await response.json();
     
     // Store both token and address
+        //Added for testing purpose
+
     localStorage.setItem("chopin_token", token);
     localStorage.setItem("wallet_address", address);
     

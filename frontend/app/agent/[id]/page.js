@@ -28,8 +28,7 @@ export default function AgentDetail() {
 
         const fetchAgentData = async () => {
             try {
-              
-                const response = await fetch(`http://localhost:3001/character/${id}`);
+                const response = await fetch(`/api/backend/character/${id}`);
                 if (!response.ok) throw new Error("Failed to fetch agent data");
                 const data = await response.json();
                 setAgentData(data);
@@ -39,68 +38,57 @@ export default function AgentDetail() {
                 setLoading(false);
             }
         };
-
+        
         fetchAgentData();
-    }, [id, agent]);
-
-    const sendMessage = async () => {
-        if (!userInput.trim()) return;
-
-        try {
-    
-            const response = await fetch('/api/timestamp'); 
-            const { timestamp } = await response.json();
-            const date = new Date(timestamp).toLocaleDateString(); 
-
-            // Create user log entry
-            const userLog = {
-                type: 'USER_PROMPT',
-                message: userInput,
-                date: date,
-                timestamp: timestamp, 
-                agent: id
-            };
-
-            // Send user input to the agent
-            const agentResponse = await fetch(`http://localhost:3000/${id}/message`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    text: userInput,
-                    userId: "user",
-                    userName: "User  ",
-                }),
-            });
-
-            if (!agentResponse.ok) throw new Error("Agent response failed");
-
-            const data = await agentResponse.json();
-            const responseText = data[0].text;
-
-            // Create agent log entry
-            const agentLog = {
-                type: 'AGENT_RESPONSE',
-                message: responseText,
-                date: date,
-                timestamp: timestamp, // Use fetched timestamp
-                agent: id
-            };
-
-            // Update interaction logs and chat history
-            setInteractionLogs(prev => [...prev, userLog, agentLog]);
-            setChatHistory(prev => [
-                ...prev,
-                { user: "You", text: userInput },
-                { user: agent.name, text: responseText },
-            ]);
-            setUserInput("");
-
-    
-
-        } catch (error) {
-            console.error("Error sending message:", error);
-        }
-    };
+        }, [id, agent]);
+        
+        const sendMessage = async () => {
+            if (!userInput.trim()) return;
+        
+            try {
+                // Create user log entry
+                const userLog = {
+                    type: 'USER_PROMPT',
+                    message: userInput,
+                    agent: id
+                };
+        
+                // Send message using agent rewrite route
+                const agentResponse = await fetch(`/api/agent/${id}/message`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        text: userInput,
+                        userId: "user",
+                        userName: "User",
+                    }),
+                });
+        
+                if (!agentResponse.ok) throw new Error("Agent response failed");
+        
+                const data = await agentResponse.json();
+                const responseText = data[0].text;
+        
+                // Create agent log entry
+                const agentLog = {
+                    type: 'AGENT_RESPONSE',
+                    message: responseText,
+                    agent: id
+                };
+        
+                // Update states
+                setInteractionLogs(prev => [...prev, userLog, agentLog]);
+                setChatHistory(prev => [
+                    ...prev,
+                    { user: "You", text: userInput },
+                    { user: agent.name, text: responseText },
+                ]);
+                setUserInput("");
+        
+            } catch (error) {
+                console.error("Error sending message:", error);
+            }
+        };
     
 
     

@@ -1,12 +1,16 @@
 export default {
-    reactStrictMode: true,
-    async rewrites() {
-      return [
-        {
-          source: "/api/:path*",
-          destination: process.env.API_PROXY_URL || "http://localhost:3001/:path*",
-        },
-      ];
-    },
-  };
-  
+  reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: '/api/backend/:path*',
+        destination: 'http://localhost:3001/:path*' // Express backend
+      },
+      {
+        source: '/api/agent/:path*',
+        destination: 'http://localhost:3000/:path*' // Agent server
+      },
+      
+    ];
+  },
+};
