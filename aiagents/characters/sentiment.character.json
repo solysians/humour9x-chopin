@@ -1,5 +1,5 @@
 {
-    "name": "SentimentAnalysis",
+    "name": "Sentiment",
     "plugins": [],
     "clients": [],
     "modelProvider": "openrouter",
