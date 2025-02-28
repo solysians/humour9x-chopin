@@ -1,5 +1,5 @@
 import express from "express";
-import cors from "cors";
+// import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -33,7 +33,7 @@ const app = express();
 const PORT = 3001; // Express API port
 
 app.use(express.json());
-app.use(cors());
+// app.use(cors());
 
 // Serve character JSON data dynamically
 app.get("/character/:id", (req, res) => {
