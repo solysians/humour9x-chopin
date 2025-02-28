@@ -36,7 +36,7 @@ Create a `.env` file in the backend directory and add the required environment v
 ### 5. Run the Backend with Character Configuration
 
 ```sh
-pnpm start --characters="characters/journalist.character.json"
+pnpm start --characters="characters/journalist.character.json,characters/memejournalist.character.json,characters/comic.character.json"
 ```
 
 This starts the backend and loads the Journalist agent configuration.
