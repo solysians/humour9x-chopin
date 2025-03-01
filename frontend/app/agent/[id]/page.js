@@ -19,7 +19,7 @@ export default function AgentDetail() {
     const [userInput, setUserInput] = useState("");
     const [chatHistory, setChatHistory] = useState([]);
     const [interactionLogs, setInteractionLogs] = useState([]);
-    const [selectedLog, setSelectedLog] = useState(null); // State to track selected log
+    const [selectedLog, setSelectedLog] = useState(null);
 
     const agent = agentsConfig.find((a) => a.id === id);
 
@@ -40,59 +40,96 @@ export default function AgentDetail() {
         };
         
         fetchAgentData();
-        }, [id, agent]);
-        
-        const sendMessage = async () => {
-            if (!userInput.trim()) return;
-        
-            try {
-                // Create user log entry
-                const userLog = {
-                    type: 'USER_PROMPT',
-                    message: userInput,
-                    agent: id
-                };
-        
-                // Send message using agent rewrite route
-                const agentResponse = await fetch(`/api/agent/${id}/message`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        text: userInput,
-                        userId: "user",
-                        userName: "User",
-                    }),
-                });
-        
-                if (!agentResponse.ok) throw new Error("Agent response failed");
-        
-                const data = await agentResponse.json();
-                const responseText = data[0].text;
-        
-                // Create agent log entry
-                const agentLog = {
-                    type: 'AGENT_RESPONSE',
-                    message: responseText,
-                    agent: id
-                };
-        
-                // Update states
-                setInteractionLogs(prev => [...prev, userLog, agentLog]);
-                setChatHistory(prev => [
-                    ...prev,
-                    { user: "You", text: userInput },
-                    { user: agent.name, text: responseText },
-                ]);
-                setUserInput("");
-        
-            } catch (error) {
-                console.error("Error sending message:", error);
-            }
-        };
-    
+    }, [id, agent]);
 
-    
-   
+    const formatTimestamp = (timestamp) => {
+        const date = new Date(timestamp);
+        return date.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: true,
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+    };
+
+    const sendMessage = async () => {
+        if (!userInput.trim()) return;
+
+        try {
+            // Get Oracle timestamp for user prompt
+            const timestampResponse = await fetch('/api/timestamp', {
+                headers: {
+                    'x-callback-url': process.env.NEXT_PUBLIC_ORACLE_CALLBACK
+                }
+            });
+            if (!timestampResponse.ok) throw new Error("Timestamp failed");
+            const { timestamp: userTimestamp } = await timestampResponse.json();
+
+            // Create user log entry
+            const userLog = {
+                type: 'USER_PROMPT',
+                message: userInput,
+                agent: id,
+                timestamp: userTimestamp
+            };
+
+            // Send message to agent
+            const agentResponse = await fetch(`/api/agent/${id}/message`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    'x-callback-url': process.env.NEXT_PUBLIC_ORACLE_CALLBACK
+                },
+                body: JSON.stringify({
+                    text: userInput,
+                    userId: "user",
+                    userName: "User",
+                }),
+            });
+
+            if (!agentResponse.ok) throw new Error("Agent response failed");
+            const data = await agentResponse.json();
+
+            // Get Oracle timestamp for agent response
+            const responseTimestampRes = await fetch('/api/timestamp', {
+                headers: {
+                    'x-callback-url': process.env.NEXT_PUBLIC_ORACLE_CALLBACK
+                }
+            });
+            const { timestamp: agentTimestamp } = await responseTimestampRes.json();
+
+            // Create agent log entry
+            const agentLog = {
+                type: 'AGENT_RESPONSE',
+                message: data[0].text,
+                agent: id,
+                timestamp: agentTimestamp
+            };
+
+            // Update states
+            setInteractionLogs(prev => [...prev, userLog, agentLog]);
+            setChatHistory(prev => [
+                ...prev,
+                { 
+                    user: "You", 
+                    text: userInput, 
+                    timestamp: userTimestamp 
+                },
+                { 
+                    user: agent.name, 
+                    text: data[0].text, 
+                    timestamp: agentTimestamp 
+                },
+            ]);
+            setUserInput("");
+
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
 
     if (!agent) return <h2>Agent not found!</h2>;
     if (loading) return <h2>Loading...</h2>;
@@ -112,6 +149,9 @@ export default function AgentDetail() {
                         {chatHistory.map((msg, index) => (
                             <div key={index} className={`${homeStyle.message} ${msg.user === "You" ? homeStyle.userMessage : homeStyle.agentMessage}`}>
                                 <strong>{msg.user}:</strong> {msg.text}
+                                <div className={homeStyle.timestamp}>
+                                    {formatTimestamp(msg.timestamp)}
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -127,9 +167,6 @@ export default function AgentDetail() {
                         <button onClick={sendMessage}>Send</button>
                     </div>
                 </div>
-
-             
-
 
                 <button
                     className={`${homeStyle.goBackButton} ${dark ? homeStyle.darkButton : ""}`}

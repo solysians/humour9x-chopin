@@ -1,21 +1,20 @@
-// // app/api/timestamp/route.js
-// import { Oracle } from "@chopinframework/next";
+import { Oracle } from '@chopinframework/core';
+import { NextResponse } from 'next/server';
 
-// export async function GET() {
-//     const timestamp = await Oracle.now();
-//     return new Response(JSON.stringify({ timestamp }), {
-//         status: 200,
-//         headers: { "Content-Type": "application/json" },
-//     });
-// }
-
-  // app/api/timestamp/route.js
-export async function GET() {
-  return new Response(JSON.stringify({ 
-      timestamp: Date.now(),
-      isoDate: new Date().toISOString()
-  }), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 200
-  });
+export async function GET(request) {
+  try {
+    const callbackUrl = request.headers.get('x-callback-url');
+    const oracle = new Oracle(callbackUrl);
+    const timestamp = await oracle.notarize(() => Date.now());
+    return NextResponse.json({ 
+      timestamp,
+      environment: process.env.NODE_ENV 
+    });
+  } catch (error) {
+    console.error("Oracle error:", error); // Log any errors
+    return NextResponse.json(
+      { error: 'Failed to get Oracle timestamp' },
+      { status: 500 }
+    );
+  }
 }
