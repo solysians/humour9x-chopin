@@ -7,6 +7,7 @@ import agentsConfig from "@/app/config/agents";
 import Header from "@/app/components/Header";
 import { useTheme } from "@/app/Hooks/useTheme";
 import { useState, useEffect } from "react";
+import { getOracleTimestamp, oracleFetch } from '@/app/utils/oracleUtils';
 
 export default function AgentDetail() {
     const { id } = useParams();
@@ -28,7 +29,10 @@ export default function AgentDetail() {
 
         const fetchAgentData = async () => {
             try {
-                const response = await fetch(`/api/backend/character/${id}`);
+                const response = await oracleFetch(
+                    process.env.NEXT_PUBLIC_ORACLE_CALLBACK,
+                    `/api/backend/character/${id}`
+                );
                 if (!response.ok) throw new Error("Failed to fetch agent data");
                 const data = await response.json();
                 setAgentData(data);
@@ -56,81 +60,73 @@ export default function AgentDetail() {
     };
 
     const sendMessage = async () => {
-        if (!userInput.trim()) return;
+  if (!userInput.trim()) return;
 
-        try {
-            // Get Oracle timestamp for user prompt
-            const timestampResponse = await fetch('/api/timestamp', {
-                headers: {
-                    'x-callback-url': process.env.NEXT_PUBLIC_ORACLE_CALLBACK
-                }
-            });
-            if (!timestampResponse.ok) throw new Error("Timestamp failed");
-            const { timestamp: userTimestamp } = await timestampResponse.json();
+  try {
+    // Get Oracle timestamp for user prompt
+    const userTimestamp = await getOracleTimestamp(process.env.NEXT_PUBLIC_ORACLE_CALLBACK);
 
-            // Create user log entry
-            const userLog = {
-                type: 'USER_PROMPT',
-                message: userInput,
-                agent: id,
-                timestamp: userTimestamp
-            };
-
-            // Send message to agent
-            const agentResponse = await fetch(`/api/agent/${id}/message`, {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    'x-callback-url': process.env.NEXT_PUBLIC_ORACLE_CALLBACK
-                },
-                body: JSON.stringify({
-                    text: userInput,
-                    userId: "user",
-                    userName: "User",
-                }),
-            });
-
-            if (!agentResponse.ok) throw new Error("Agent response failed");
-            const data = await agentResponse.json();
-
-            // Get Oracle timestamp for agent response
-            const responseTimestampRes = await fetch('/api/timestamp', {
-                headers: {
-                    'x-callback-url': process.env.NEXT_PUBLIC_ORACLE_CALLBACK
-                }
-            });
-            const { timestamp: agentTimestamp } = await responseTimestampRes.json();
-
-            // Create agent log entry
-            const agentLog = {
-                type: 'AGENT_RESPONSE',
-                message: data[0].text,
-                agent: id,
-                timestamp: agentTimestamp
-            };
-
-            // Update states
-            setInteractionLogs(prev => [...prev, userLog, agentLog]);
-            setChatHistory(prev => [
-                ...prev,
-                { 
-                    user: "You", 
-                    text: userInput, 
-                    timestamp: userTimestamp 
-                },
-                { 
-                    user: agent.name, 
-                    text: data[0].text, 
-                    timestamp: agentTimestamp 
-                },
-            ]);
-            setUserInput("");
-
-        } catch (error) {
-            console.error("Error:", error);
-        }
+    // Create user log entry
+    const userLog = {
+      type: 'USER_PROMPT',
+      message: userInput,
+      agent: id,
+      timestamp: userTimestamp,
     };
 
+    // Send message to agent using oracleFetch
+    const agentResponse = await oracleFetch(
+      process.env.NEXT_PUBLIC_ORACLE_CALLBACK,
+      `/api/agent/${id}/message`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-callback-url': process.env.NEXT_PUBLIC_ORACLE_CALLBACK,
+        },
+        body: JSON.stringify({
+          text: userInput,
+          userId: 'user',
+          userName: 'User',
+        }),
+      }
+    );
+
+    if (!agentResponse.ok) throw new Error('Agent response failed');
+    const data = await agentResponse.json();
+
+    // Get Oracle timestamp for agent response
+    const agentTimestamp = await getOracleTimestamp(process.env.NEXT_PUBLIC_ORACLE_CALLBACK);
+
+    // Create agent log entry
+    const agentLog = {
+      type: 'AGENT_RESPONSE',
+      message: data[0].text,
+      agent: id,
+      timestamp: agentTimestamp,
+    };
+
+    // Update states
+    setInteractionLogs((prev) => [...prev, userLog, agentLog]);
+    setChatHistory((prev) => [
+      ...prev,
+      {
+        user: 'You',
+        text: userInput,
+        timestamp: userTimestamp,
+      },
+      {
+        user: agent.name,
+        text: data[0].text,
+        timestamp: agentTimestamp,
+      },
+    ]);
+    setUserInput('');
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+  
     if (!agent) return <h2>Agent not found!</h2>;
     if (loading) return <h2>Loading...</h2>;
 
